@@ -1,28 +1,85 @@
 import requests
+import unittest
 import json
+import os
+import time
+import sys
+import xml.etree.ElementTree as ET
+import subprocess
 
 
-#check if http status code is 200 when service is running
-def test_http_returns_code_200():
-     response = requests.get("http://localhost:4567")
-     assert response.status_code == 200
+# def refresh():
+    
+
+#     try:
+#         # os.system("curl --location --request GET 'http://localhost:4567/shutdown'")
+#         subprocess.run(["curl", "--location", "--request", "GET", "http://localhost:4567/shutdown"])
+#     except requests.exceptions.RequestException as e:
+#         print('shit')
+    
+#     subprocess.run(["java", "-jar", "../runTodoManagerRestAPI-1.5.5.jar"])
+#     return
+        
+
+# def refresh():    
+#     try:
+#         requests.get("http://localhost:4567/shutdown")
+#         os.system("sleep 2s")
+#         os.system("java -jar ../runTodoManagerRestAPI-1.5.5.jar")
+#     except requests.exceptions.RequestException as e:
+#         print('shit')
+    
+#     return
+    
+
+# #check if http status code is 200 when service is running
+# def test_http_returns_code_200():
+#      response = requests.get("http://localhost:4567")
+#      assert response.status_code == 200
      
     
-#GET /todos 
-def test_GET_todo():
+# GET /todos 
+def test_GET_todo():   
+    
     response = requests.get("http://localhost:4567/todos")
     response_body = response.json()
     assert response.status_code == 200
+    assert response_body["todos"][0]["id"] == "1"
+    
+
+
+# GET /todos XML
+def test_GET_todo_XML():
     
     
-#HEAD /todos  
+    response = requests.get("http://localhost:4567/todos",
+        headers = {
+            'Content-type': 'application/xml',
+            'Accept': 'application/xml'
+        }
+    )
+    
+    assert response.status_code == 200
+    assert response.headers["Content-Type"] == "application/xml"
+    
+    response_body_as_xml = ET.fromstring(response.content)
+    xml_tree = ET.ElementTree(response_body_as_xml)
+    todo = xml_tree.find("todo")
+    assert todo.tag == "todo"
+    
+
+   
+    
+# HEAD /todos  
 def test_HEAD_todo():
     response = requests.get("http://localhost:4567/todos")
+    assert response.status_code == 200
     assert response.headers["Content-Type"] == "application/json"
     assert response.headers["Transfer-Encoding"] == "chunked"
     
+    
 
-#test POST /todos with title
+# test POST /todos with title
 def test_POST_todo_with_title():
     json_input = {
             
@@ -39,9 +96,10 @@ def test_POST_todo_with_title():
     #check json output
     response_body = response.json()
     assert response_body["title"] == "ecse 429"
+
     
 
-#test POST /todos returns wrror code without title (was not performed in exploratory testing)
+# test POST /todos returns wrror code without title (was not performed in exploratory testing)
 def test_POST_todo_without_title():
     json_input = {
             
@@ -64,13 +122,153 @@ def test_GET_todo_id():
     assert response_body["todos"][0]["title"] == "scan paperwork"
 
 
-#HEAD /todos/:id:
+# GET /todos/:id with XML
+def test_GET_todo_id_XML():
+    response = requests.get("http://localhost:4567/todos/1",
+        headers = {
+            'Content-type': 'application/xml',
+            'Accept': 'application/xml'
+        }
+    )
+    
+    assert response.status_code == 200
+    assert response.headers["Content-Type"] == "application/xml"
+    
+    response_body_as_xml = ET.fromstring(response.content)
+    xml_tree = ET.ElementTree(response_body_as_xml)
+    todo = xml_tree.find("todo")
+    assert todo.tag == "todo"
+    
+
+
+# HEAD /todos/:id:
 def test_HEAD_todo_id():
     response = requests.get("http://localhost:4567/todos/1")
+    assert response.status_code == 200
     assert response.headers["Content-Type"] == "application/json"
     assert response.headers["Transfer-Encoding"] == "chunked"
     
     
+#test POST /todos/:id with title and description of VALID ID = 1
+def test_POST_todo_id_with_title_validID():
+    json_input = {
+            
+            "title": "Testing Post with updated Title",
+            "description": "updated Description"
+            
+        }
+    request_json = json.dumps(json_input)
+    #create post request
+    response = requests.post("http://localhost:4567/todos/1", request_json)
+    assert response.status_code == 200
+
+#Test for DELETE /todos/:id with INVALID ID of 7
+def test_DELETE_invalidID():
+    response = requests.delete("http://localhost:4567/todos/7")
+    assert response.status_code == 404
+    #404 NOT FOUND ERROR EXPECTED HERE
+
+#Test for PUT /todos/:id with INVALID ID of 7
+def test_PUT_invalidID():
+    json_input = {
+            
+            "title": "Testing PUT with updated Title",
+            "description": "updated Description"
+            
+        }
+    request_json = json.dumps(json_input)
+    response = requests.put("http://localhost:4567/todos/7", request_json)
+    assert response.status_code == 404
+    #404 NOT FOUND ERROR EXPECTED HERE
+
+#Test for PUT /todos/:id with VALID ID of 1
+def test_PUT_validID():
+    json_input = {
+            
+            "title": "Testing PUT with updated Title",
+            "description": "updated Description"
+            
+        }
+    request_json = json.dumps(json_input)
+    response = requests.put("http://localhost:4567/todos/1",request_json)
+    assert response.status_code == 200
+    
+    
+# GET /todos/:id/tasksof
+def test_GET_todo_id_taskof():
+    response = requests.get("http://localhost:4567/todos/1/tasksof")
+    response_body = response.json()
+    assert response.status_code == 200
+    assert response_body["projects"][0]["id"] == "1"
+    
+    
+# GET /todos/:id/tasksof
+def test_GET_todo_id_taskof_XML():
+    response = requests.get("http://localhost:4567/todos/1/tasksof",
+        headers = {
+            'Content-type': 'application/xml',
+            'Accept': 'application/xml'
+        }
+    )
+    
+    assert response.status_code == 200
+    assert response.headers["Content-Type"] == "application/xml"
+       
+    
+    
+# HEAD /todos/:id/tasksof
+def test_HEAD_todo_id_taskof():
+    response = requests.get("http://localhost:4567/todos/1")
+    assert response.status_code == 200
+    assert response.headers["Content-Type"] == "application/json"
+    assert response.headers["Transfer-Encoding"] == "chunked"
+        
+
+# POST /todos/:id/tasksof returns 404 with invalid id
+def test_POST_todo_id_taskof_with_invalid_id():
+    json_input = {
+            
+            "id": "1"
+            
+        }
+    request_json = json.dumps(json_input)
+    
+    #create post request
+    response = requests.post("http://localhost:4567/todos/819/tasksof", request_json)
+    assert response.status_code == 404
+    
+    
+# POST /todos/:id/tasksof returns 404 with valid id
+def test_POST_todo_id_taskof_with_valid_id():
+    json_input = {
+            
+            "id": "1"
+            
+        }
+    request_json = json.dumps(json_input)
+    
+    #create post request
+    response = requests.post("http://localhost:4567/todos/3/tasksof", request_json)
+    assert response.status_code == 201
+    
+
+# /todos/:id/tasksof/:id
+def test_DELTE_todo_id_taskof_with_valid_id():
+    #create delete request
+    response = requests.delete("http://localhost:4567/todos/2/tasksof/1")
+    assert response.status_code == 200
+
+
+# /todos/:id/tasksof/:id fails deleting instance that has already been deleted
+def test_DELETE_todo_id_taskof_invalid_id():
+    #create delete request
+    response = requests.delete("http://localhost:4567/todos/2/tasksof/1")
+    assert response.status_code == 404    
+    
+
+
+
+
     
     
     

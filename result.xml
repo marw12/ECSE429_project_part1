@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="0" skipped="0" tests="2" time="0.066" timestamp="2020-10-25T17:25:04.051608" hostname="marvins-machine"><testcase classname="unitTests" name="test_GET_todo" time="0.005" /><testcase classname="unitTests" name="test_GET_todo_XML" time="0.007" /></testsuite></testsuites>
