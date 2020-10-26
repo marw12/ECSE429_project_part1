@@ -2,16 +2,17 @@ import requests
 import json
 import sys
 import os
-
+from restart import shutdown_server
+from restart import restart
 
     
 
 #check if http status code is 200
 def test_http_returns_code_200():
+
      response = requests.get("http://localhost:4567")
      assert response.status_code == 200
-     
-    
+
 #GET /todos 
 def test_GET_todo():
     response = requests.get("http://localhost:4567/todos")
@@ -19,7 +20,7 @@ def test_GET_todo():
     assert response.status_code == 200
     assert response_body["todos"][0]["title"] == "file paperwork"
     assert response_body["todos"][1]["title"] == "scan paperwork"
-    
+   
     
 #HEAD /todos  
 def test_HEAD_todo():
@@ -84,7 +85,7 @@ def test_HEAD_todo():
     assert response.headers["Transfer-Encoding"] == "chunked"
 
 #test POST /todos/:id with title and description of VALID ID = 1
-def test_POST_todo_with_title():
+def test_POST_todo_with_title_ID():
     json_input = {
             
             "title": "Testing Post with updated Title",
@@ -94,7 +95,7 @@ def test_POST_todo_with_title():
     request_json = json.dumps(json_input)
     #create post request
     response = requests.post("http://localhost:4567/todos/1", request_json)
-    assert response.status_code == 400
+    assert response.status_code == 200
 
 #Test for DELETE /todos/:id with INVALID ID of 7
 def test_DELETE_invalidID():
