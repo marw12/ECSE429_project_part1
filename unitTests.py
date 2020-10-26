@@ -1,6 +1,15 @@
 import requests
 import json
+import sys
+import os
 
+def start_server():
+    if (sys.platform.startswith("win32")):
+        os.system("start /B java -jar runTodoManagerRestAPI-1.5.5.jar")
+    else:
+        os.system("java -jar runTodoManagerRestAPI-1.5.5.jar")
+    os.system("sleep 2s")
+    
 
 #check if http status code is 200
 def test_http_returns_code_200():
