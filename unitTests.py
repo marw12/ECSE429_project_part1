@@ -1,11 +1,7 @@
 import requests
-import unittest
 import json
-import os
-import time
-import sys
 import xml.etree.ElementTree as ET
-import subprocess
+
 
 """
 UNIT TESTS FOR ECSE 429 PROJECT A
@@ -27,10 +23,8 @@ def test_GET_todo():
     """Test for GET /todo with JSON response
     Expecting: 200 OK """
     response = requests.get("http://localhost:4567/todos")
-    response_body = response.json()
     assert response.status_code == 200
     print("-----NEW ORDER RENDERED------")
-    #assert response_body["todos"][0]["id"] == "1"
     
 
 
@@ -116,7 +110,7 @@ def test_GET_todo_id():
     response_body = response.json()
     assert response.status_code == 200
     assert response_body["todos"][0]["id"] == "1"
-    #assert response_body["todos"][0]["title"] == "scan paperwork"
+    
 
 
 # GET /todos/:id with XML
@@ -304,7 +298,6 @@ def test_GET_id_categories():
     """Test for GET /todo/:id/categories wth Valid ID request
     Expecting: 200 OK, JSON response [id]"""
     response = requests.get("http://localhost:4567/todos/1/categories")
-    response_body = response.json()
     assert response.status_code == 200
 
 def test_HEAD_id_categories():
@@ -333,7 +326,6 @@ def test_GET_projects():
     """Test for GET /projects wth Valid ID request
     Expecting: 200 OK """
     response = requests.get("http://localhost:4567/projects")
-    response_body = response.json()
     assert response.status_code == 200
     
 def test_HEAD_projects():  
@@ -360,7 +352,6 @@ def test_GET_projects_id():
     """Test for GET /projects/:id wth Valid ID request
     Expecting: 200 OK """
     response = requests.get("http://localhost:4567/projects/1")
-    response_body = response.json()
     assert response.status_code == 200
 
 def test_HEAD_projects_id():
@@ -395,5 +386,4 @@ def test_GET_projects_id_categories():
     """Test for GET /projects/:id/categories wth Valid ID request
     Expecting: 200 OK """
     response = requests.get("http://localhost:4567/projects/1/categories")
-    response_body = response.json()
     assert response.status_code == 200
