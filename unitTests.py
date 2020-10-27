@@ -13,34 +13,11 @@ ON LOCALHOST:4567
 API DOCUMENTATION CAN BE FOUND ON LOCALHOST:4567/docs
 """
 
-# def refresh():
-    
 
-#     try:
-#         # os.system("curl --location --request GET 'http://localhost:4567/shutdown'")
-#         subprocess.run(["curl", "--location", "--request", "GET", "http://localhost:4567/shutdown"])
-#     except requests.exceptions.RequestException as e:
-#         print('shit')
-    
-#     subprocess.run(["java", "-jar", "../runTodoManagerRestAPI-1.5.5.jar"])
-#     return
-        
-
-# def refresh():    
-#     try:
-#         requests.get("http://localhost:4567/shutdown")
-#         os.system("sleep 2s")
-#         os.system("java -jar ../runTodoManagerRestAPI-1.5.5.jar")
-#     except requests.exceptions.RequestException as e:
-#         print('shit')
-    
-#     return
-    
-
-# #check if http status code is 200 when service is running
-# def test_http_returns_code_200():
-#      response = requests.get("http://localhost:4567")
-#      assert response.status_code == 200
+#check if http status code is 200 when service is running
+def test_http_returns_code_200():
+      response = requests.get("http://localhost:4567")
+      assert response.status_code == 200
 
 """ localhost:4567/todos TESTS
 ------------------------------------------------------------------- """
